@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.intermine.metadata.ClassDescriptor;
@@ -1670,9 +1671,12 @@ public class ObjectStoreInterMineImpl extends ObjectStoreAbstractImpl implements
                     sql = QueryOptimiser.optimise(sql, null, db, c, QueryOptimiserContext.DEFAULT)
                         .getBestQueryString();
                 }
+                if(sql.indexOf("ORDER BY") != -1){
+                    sql = sql.substring(0,sql.indexOf("ORDER BY"));
+                }
                 sql = "SELECT COUNT(*) FROM (" + sql + ") as fake_table";
             }
-            //long time = (new Date()).getTime();
+            long time = (new Date()).getTime();
             ResultSet sqlResults;
             Statement s = c.createStatement();
             registerStatement(s);
@@ -1681,11 +1685,11 @@ public class ObjectStoreInterMineImpl extends ObjectStoreAbstractImpl implements
             } finally {
                 deregisterStatement(s);
             }
-            //long now = (new Date()).getTime();
-            //if (now - time > 10) {
-            //    LOG.debug(getModel().getName() + ": Executed SQL (time = "
-            //            + (now - time) + "): " + sql);
-            //}
+            long now = (new Date()).getTime();
+            if (now - time > 10) {
+                LOG.error(getModel().getName() + ": Executed SQL (time = "
+                        + (now - time) + "): " + sql);
+            }
             sqlResults.next();
             return sqlResults.getInt(1);
         } catch (CompletelyFalseException e) {
