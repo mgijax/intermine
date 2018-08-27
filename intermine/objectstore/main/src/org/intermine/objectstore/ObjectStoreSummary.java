@@ -210,7 +210,7 @@ public class ObjectStoreSummary
                 String fieldName = ref.getName();
                 String clsFieldName = cld.getName() + "." + fieldName;
 
-                if (ignoreFields.contains(fieldName)) {
+                if (ignoreFields.contains(clsFieldName)) {
                     continue;
                 }
 
@@ -473,8 +473,6 @@ public class ObjectStoreSummary
         // batching to work.
 
         LOG.info("Querying for empty: " + cld.getUnqualifiedName() + "." + ref.getName());
-	if (ref.getName() == "overlappingFeatures")
-	    return false;
         Query q = new Query();
         q.setDistinct(false);
 
