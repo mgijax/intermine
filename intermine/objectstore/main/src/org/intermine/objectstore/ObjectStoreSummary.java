@@ -473,6 +473,8 @@ public class ObjectStoreSummary
         // batching to work.
 
         LOG.info("Querying for empty: " + cld.getUnqualifiedName() + "." + ref.getName());
+	if (ref.getName() == "overlappingFeatures")
+	    return false;
         Query q = new Query();
         q.setDistinct(false);
 
