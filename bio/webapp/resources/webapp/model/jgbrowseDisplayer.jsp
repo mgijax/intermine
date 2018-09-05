@@ -11,7 +11,9 @@
 </script>
 
 <c:if test="${((!empty reportObject.object.chromosomeLocation && !empty reportObject.object.chromosome)
-                || cld.unqualifiedName == 'Chromosome') && cld.unqualifiedName != 'ChromosomeBand'}">
+                || cld.unqualifiedName == 'Chromosome') && cld.unqualifiedName != 'ChromosomeBand'
+		&& fn:endsWith(fn:toLowerCase(reportObject.type), 'gene')
+		&& reportObject.object.canonical == null}">
 <div id="jBrowse" style="display:none">
   <div class="geneInformation">
 

@@ -1,7 +1,7 @@
 package org.intermine.bio.web.export;
 
 /*
- * Copyright (C) 2002-2016 FlyMine
+ * Copyright (C) 2002-2017 FlyMine
  *
  * This code may be freely distributed and modified under the
  * terms of the GNU Lesser General Public Licence.  This should
@@ -9,6 +9,9 @@ package org.intermine.bio.web.export;
  * information or http://www.gnu.org/copyleft/lesser.html.
  *
  */
+
+import org.intermine.objectstore.query.ClobAccess;
+import org.intermine.bio.util.ClobAccessReverseComplement;
 
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -255,16 +258,6 @@ public class SequenceExporter implements Exporter
         String org = feature.getOrganism().getShortName();
         String strand = feature.getChromosomeLocation().getStrand();
 
-        String chrResidueString;
-        if (chromosomeSequenceMap.get(new MultiKey(chrName, org)) == null) {
-            chrResidueString = chr.getSequence().getResidues()
-                    .toString();
-            chromosomeSequenceMap.put(
-                    new MultiKey(chrName, strand, org), chr.getSequence().getResidues().toString());
-        } else {
-            chrResidueString = chromosomeSequenceMap.get(new MultiKey(chrName, strand, org));
-        }
-
         if (extension > 0) {
             start = start - extension;
             end = end + extension;
@@ -277,18 +270,12 @@ public class SequenceExporter implements Exporter
                 + start + "_" + end + "_"
                 + org.replace("\\. ", "_");
 
-        Sequence seq = DNATools.createDNASequence(chrResidueString.substring(start - 1, end),
-                        seqName);
-
+        ClobAccess fca = chr.getSequence().getResidues().subSequence(start - 1, end);
         if (NEGATIVE_STRAND.equals(strand)) {
-            try {
-                SymbolList flippedSeq = DNATools.reverseComplement(seq);
-                seq = DNATools.createDNASequence(flippedSeq.seqString(), seqName);
-            } catch (IllegalAlphabetException e) {
-                LOG.error("Export failed, Invalid sequence", e);
-                return null;
-            }
+            fca = new ClobAccessReverseComplement(fca);
         }
+        String residueString = fca.toString().toLowerCase();
+        Sequence seq = DNATools.createDNASequence(residueString, seqName);
 
         makeHeader(header, object, row, unionPathCollection, newPathCollection);
         return seq;
