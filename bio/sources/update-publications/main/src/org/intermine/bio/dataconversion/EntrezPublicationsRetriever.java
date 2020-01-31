@@ -360,6 +360,8 @@ public class EntrezPublicationsRetriever
         if (loadFullRecord) {
             urlString = EFETCH_URL + StringUtil.join(ids, ",");
         }
+        System.err .println("sleeping...");
+	Thread.sleep(500);
         System.err .println("retrieving: " + urlString);
         return new BufferedReader(new InputStreamReader(new URL(urlString).openStream()));
     }
