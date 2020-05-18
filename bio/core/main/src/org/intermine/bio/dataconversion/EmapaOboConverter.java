@@ -106,6 +106,9 @@ public EmapaOboConverter(ItemWriter writer, Model model, String dagFilename, Str
         for (Item synItem : synToItem.values()) {
             store(synItem);
         }
+        for (Item xref : xrefs.values()) {
+            store(xref);
+        }
         long timeTaken = System.currentTimeMillis() - startTime;
         LOG.info("Ran storeItems, took: " + timeTaken + " ms");
     }
